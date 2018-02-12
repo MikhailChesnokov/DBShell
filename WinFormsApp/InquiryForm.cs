@@ -32,62 +32,68 @@ namespace Forms
             SqlConnection sqlConnection1 = new SqlConnection(database.ConnectionString);
             SqlCommand cmd = new SqlCommand();
             SqlDataReader reader;
-
-            cmd.CommandText = inquiry.Trim('\r', '\n');
+            
             cmd.CommandType = System.Data.CommandType.Text;
             cmd.Connection = sqlConnection1;
-
-            sqlConnection1.Open();
-            reader = cmd.ExecuteReader();
-
-            dataGridView1.Rows.Clear();
-            dataGridView1.Columns.Clear();
-
-            if (reader.HasRows)
+            try
             {
-                reader.Read();
-                for (int i = 0; i < reader.FieldCount; i++)
-                {
-                    dataGridView1.Columns.Add("Column" + i, reader.GetName(i));
-                }
+                sqlConnection1.Open();
+                reader = cmd.ExecuteReader();
 
-                int row = 0;
-                do
+                dataGridView1.Rows.Clear();
+                dataGridView1.Columns.Clear();
+
+                if (reader.HasRows)
                 {
-                    dataGridView1.Rows.Add();
+                    reader.Read();
                     for (int i = 0; i < reader.FieldCount; i++)
                     {
-                        string type = reader.GetFieldType(i).Name;
-                        switch (type)
-                        {
-                            case ("Int16"):
-                                dataGridView1[i, row].Value = reader.GetInt16(i);
-                                break;
-                            case ("Int32"):
-                                dataGridView1[i, row].Value = reader.GetInt32(i);
-                                break;
-                            case ("Decimal"):
-                                dataGridView1[i, row].Value = reader.GetDecimal(i);
-                                break;
-                            case ("Double"):
-                                dataGridView1[i, row].Value = reader.GetDouble(i);
-                                break;
-                            case ("String"):
-                                dataGridView1[i, row].Value = reader.GetString(i);
-                                break;
-
-                        }
+                        dataGridView1.Columns.Add("Column" + i, reader.GetName(i));
                     }
-                    row++;
-                } while (reader.Read());
-            }
-            else
-            {
-                Console.WriteLine("No rows found.");
-            }
-            reader.Close();
 
-            sqlConnection1.Close();
+                    int row = 0;
+                    do
+                    {
+                        dataGridView1.Rows.Add();
+                        for (int i = 0; i < reader.FieldCount; i++)
+                        {
+                            string type = reader.GetFieldType(i).Name;
+                            switch (type)
+                            {
+                                case ("Int16"):
+                                    dataGridView1[i, row].Value = reader.GetInt16(i);
+                                    break;
+                                case ("Int32"):
+                                    dataGridView1[i, row].Value = reader.GetInt32(i);
+                                    break;
+                                case ("Decimal"):
+                                    dataGridView1[i, row].Value = reader.GetDecimal(i);
+                                    break;
+                                case ("Double"):
+                                    dataGridView1[i, row].Value = reader.GetDouble(i);
+                                    break;
+                                case ("String"):
+                                    dataGridView1[i, row].Value = reader.GetString(i);
+                                    break;
+
+                            }
+                        }
+                        row++;
+                    } while (reader.Read());
+                }
+                else
+                {
+                    Console.WriteLine("No rows found.");
+                }
+                reader.Close();
+
+                sqlConnection1.Close();
+            }
+            catch(InvalidOperationException e1)
+            {
+                MessageBox.Show("Введён неверный текст запроса.");
+            }
+
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)
@@ -354,7 +360,10 @@ namespace Forms
                 where += conditionDataGridView[4, i].Value.ToString() + " ";
             }
 
-            inquiry = select + from + where;
+            inquiry = select + from;
+            if (conditionDataGridView.RowCount > 0)
+                inquiry += where;
+
             inquiryTextBox.Text = inquiry;
         }
 

@@ -446,5 +446,37 @@ namespace Forms
             }
         }
         #endregion DeleteLinkButton
+
+        private void CreateInquiryButton_Click(object sender, EventArgs e)
+        {
+            if (DatabasesTree.SelectedNode != null && DatabasesTree.SelectedNode.Level == 0)
+            {
+                Database database = _app.GetDatabaseByName(DatabasesTree.SelectedNode.Text);
+                
+                try
+                {
+                    InquiryForm inquiryForm = new InquiryForm(database, _app);
+                    inquiryForm.ShowDialog();
+                }
+                catch (ArgumentException e1)
+                {
+                    Console.WriteLine("ошбика при проверке возможности развертывания. " + e1.Message);
+                }
+                
+
+                //_nodes.Clear();
+                //if (DatabasesTree.Nodes.Count != 0)
+                //{
+                //    TreeNode treeviewNodes = DatabasesTree.SelectedNode != null && DatabasesTree.SelectedNode.Level == 0
+                //        ? DatabasesTree.SelectedNode
+                //        : DatabasesTree.TopNode;
+                //    foreach (TreeNode node in treeviewNodes.Nodes) _nodes.Add(node.Text);
+                //}
+            }
+            else
+            {
+                MessageBox.Show(@"Выберите базу данных!");
+            }
+        }
     }
 }
