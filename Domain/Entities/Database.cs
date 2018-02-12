@@ -24,7 +24,7 @@ namespace Domain.Entities
 
         protected internal IList<Table> Tables { get; protected set; }
 
-        protected internal string ConnectionString =>
+        public string ConnectionString =>
             $"Data Source={ServerName};Initial Catalog={Name};Integrated Security=True";
 
         protected internal void Rename(string name)
